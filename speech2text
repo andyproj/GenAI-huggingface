@@ -1,0 +1,37 @@
+import { HfInference } from '@huggingface/inference'
+
+// Create your Hugging Face Token: https://huggingface.co/settings/tokens
+// Set your Hugging Face Token: https://scrimba.com/dashboard#env
+// Learn more: https://scrimba.com/links/env-variables
+const hf = new HfInference(process.env.HF_TOKEN)
+
+// Hugging Face Inference API docs: https://huggingface.co/docs/huggingface.js/inference/README
+
+// Program to call a default text generation model from huggingface and extend the provided text
+
+const textToExtend = "It's an exciting time to be a PowerBI specialist because "
+
+
+const textToExtendResponse = await hf.textGeneration({
+    inputs: textToExtend,
+    model: "HuggingFaceH4/zephyr-7b-beta"
+})
+
+
+// Convert extended text object to string
+
+const textConvert = JSON.stringify(textToExtendResponse)
+
+
+// Pass generated text to an audio model 
+
+const response = await hf.textToSpeech({
+  inputs: textConvert,
+  model: "espnet/kan-bayashi_ljspeech_vits"
+})
+
+// Create a url for the blob response and attach to the audio source
+
+const audioElement = document.getElementById('speech')
+const speechUrl = URL.createObjectURL(response)
+audioElement.src = speechUrl
